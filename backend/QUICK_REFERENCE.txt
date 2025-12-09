@@ -1,0 +1,275 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   BACKEND ANDROID - REFERENCIA RÁPIDA                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 INICIO RÁPIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Asegúrate de que MongoDB esté corriendo:
+   Windows: net start MongoDB
+   macOS:   brew services start mongodb-community
+   Linux:   sudo systemctl start mongod
+
+2. Compila el proyecto:
+   mvn clean install
+
+3. Ejecuta la aplicación:
+   mvn spring-boot:run
+
+4. La app estará disponible en:
+   http://localhost:8080
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 ENDPOINTS PRINCIPALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AUTENTICACIÓN (SIN TOKEN)
+├─ POST   /api/auth/register        │ Registrar nuevo usuario
+└─ POST   /api/auth/login           │ Iniciar sesión
+
+USUARIOS (CON TOKEN)
+├─ GET    /api/users/me             │ Obtener perfil
+├─ PATCH  /api/users/me             │ Actualizar personaje
+└─ POST   /api/users/me/avatar      │ Subir avatar
+
+UBICACIÓN (CON TOKEN)
+├─ POST   /api/users/me/location    │ Guardar ubicación
+└─ GET    /api/users/me/location    │ Obtener historial
+
+ARCHIVOS
+└─ GET    /api/files/{filename}     │ Descargar imagen
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 AUTENTICACIÓN JWT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Todos los endpoints protegidos requieren:
+   Authorization: Bearer {token}
+
+El token se recibe en POST /api/auth/login y POST /api/auth/register
+
+Ejemplo de request protegido:
+   curl -X GET http://localhost:8080/api/users/me \
+     -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9..."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 ESTRUCTURA DE CARPETAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+src/main/java/com/app/backend/
+│
+├── controller/          ← REST endpoints
+│   ├── AuthController.java
+│   ├── UserController.java
+│   ├── LocationController.java
+│   └── FileController.java
+│
+├── service/            ← Lógica de negocio
+│   ├── AuthService.java
+│   ├── UserService.java
+│   └── LocationService.java
+│
+├── repository/         ← Acceso a datos (MongoDB)
+│   ├── UserRepository.java
+│   └── LocationLogRepository.java
+│
+├── model/              ← Entidades
+│   ├── User.java
+│   └── LocationLog.java
+│
+├── config/             ← Configuración
+│   ├── SecurityConfig.java
+│   └── WebConfig.java
+│
+├── security/           ← JWT y autenticación
+│   ├── JwtTokenProvider.java
+│   └── JwtAuthenticationFilter.java
+│
+├── dto/                ← Objetos de transferencia
+│   ├── AuthResponse.java
+│   ├── UserDto.java
+│   ├── LoginRequest.java
+│   └── ...
+│
+└── exception/          ← Manejo de errores
+    ├── GlobalExceptionHandler.java
+    └── ErrorResponse.java
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💾 BASE DE DATOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Colección: users
+{
+  _id: ObjectId,
+  id: "uuid",
+  email: "usuario@example.com",
+  passwordHash: "$2a$10$...",
+  characterVariant: 1,
+  profileImageUrl: "/api/files/uuid_filename.jpg",
+  createdAt: ISODate("2025-12-07T15:30:00")
+}
+
+Colección: location_logs
+{
+  _id: ObjectId,
+  id: "uuid",
+  userId: "uuid_usuario",
+  latitude: 40.4168,
+  longitude: -3.7038,
+  timestamp: ISODate("2025-12-07T15:30:00")
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 PRUEBAS CON CURL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. REGISTRAR:
+   curl -X POST http://localhost:8080/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"email":"test@example.com","password":"123456"}'
+
+2. LOGIN:
+   curl -X POST http://localhost:8080/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"test@example.com","password":"123456"}'
+   
+   (Guardar el token recibido)
+
+3. OBTENER PERFIL:
+   curl -X GET http://localhost:8080/api/users/me \
+     -H "Authorization: Bearer {TOKEN}"
+
+4. ACTUALIZAR PERSONAJE:
+   curl -X PATCH http://localhost:8080/api/users/me \
+     -H "Authorization: Bearer {TOKEN}" \
+     -H "Content-Type: application/json" \
+     -d '{"characterVariant":2}'
+
+5. GUARDAR UBICACIÓN:
+   curl -X POST http://localhost:8080/api/users/me/location \
+     -H "Authorization: Bearer {TOKEN}" \
+     -H "Content-Type: application/json" \
+     -d '{"latitude":40.4168,"longitude":-3.7038}'
+
+6. OBTENER UBICACIONES:
+   curl -X GET http://localhost:8080/api/users/me/location \
+     -H "Authorization: Bearer {TOKEN}"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ CONFIGURACIÓN IMPORTANTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Archivo: src/main/resources/application.properties
+
+# MongoDB (cambiar si está en otro lugar)
+spring.data.mongodb.uri=mongodb://localhost:27017/android_app
+
+# JWT (CAMBIAR EN PRODUCCIÓN)
+app.jwt.secret=MySecretKeyForJWTTokenGenerationAndValidationPurposeOnly12345
+app.jwt.expiration=86400000  # 24 horas
+
+# Puerto
+server.port=8080
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🐳 DOCKER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ejecutar con Docker y MongoDB:
+   docker-compose up
+
+Esto iniciará:
+   - MongoDB en localhost:27017
+   - Backend en localhost:8080
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- README.md                    ← Inicio rápido
+- API_DOCUMENTATION.md         ← Documentación completa
+- HELP.md                      ← Guía de desarrollo
+- IMPLEMENTACION_COMPLETADA.md ← Resumen de implementación
+- postman_collection.json      ← Colección para Postman
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ CARACTERÍSTICAS IMPLEMENTADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Autenticación JWT (24h de expiración)
+✅ Registro y login de usuarios
+✅ Gestión de perfil de usuario
+✅ Actualización de variante de personaje
+✅ Carga de avatares (multipart/form-data)
+✅ Guardado de ubicaciones (lat/long)
+✅ Histórico de ubicaciones
+✅ CORS habilitado
+✅ Validaciones de datos
+✅ Manejo centralizado de errores
+✅ Encriptación de contraseñas con BCrypt
+✅ MongoDB integrado
+✅ Docker y Docker Compose
+✅ Documentación completa
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 TECNOLOGÍAS USADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Spring Boot 3.4.12
+✓ Java 21
+✓ MongoDB 7.0+
+✓ JWT (jjwt 0.12.3)
+✓ Spring Security 6.x
+✓ Spring Data MongoDB
+✓ Lombok
+✓ Maven 3.8+
+✓ Docker & Docker Compose
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ PROBLEMAS FRECUENTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Puerto 8080 en uso:
+   netstat -ano | findstr :8080
+   taskkill /PID <PID> /F
+
+MongoDB no conecta:
+   mongosh
+   (Si no funciona, iniciar MongoDB)
+
+Email ya registrado:
+   mongosh
+   use android_app
+   db.users.deleteOne({email: "test@example.com"})
+
+Token inválido:
+   - Incluir header: Authorization: Bearer {token}
+   - Verificar que no haya expirado
+   - Si cambias JWT_SECRET, regenerar tokens
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 SOPORTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ver HELP.md para:
+   - Instrucciones detalladas
+   - Guía de desarrollo
+   - Creación de nuevos endpoints
+   - Solución completa de problemas
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║            Backend listo para producción en tu aplicación Android            ║
+╚══════════════════════════════════════════════════════════════════════════════╝

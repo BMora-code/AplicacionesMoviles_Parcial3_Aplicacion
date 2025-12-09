@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: android_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: android_app
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build: .
+    container_name: android_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/android_app
+      - APP_JWT_SECRET=MySecretKeyForJWTTokenGenerationAndValidationPurposeOnly12345
+      - APP_JWT_EXPIRATION=86400000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  mongodb_data:

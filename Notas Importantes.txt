@@ -1,0 +1,4 @@
+Profe, Son pasos simples pero concretos.
+
+1-Básicamente para que la app funcione se corre el backend primero, en el readme del backend sale el paso a paso de todo y las explicaciones concretas
+2-Para la app solo se abre en Android studio y ahí se compila, luego de eso verificar si el backend esta corriendo para que funcione, ya después correr la app y esta funcionando con el backend y la base de datos que seria mongodb
